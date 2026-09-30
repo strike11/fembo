@@ -1,0 +1,858 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum CompanionKind {
+  human
+  furry
+}
+
+enum MessageRole {
+  user
+  assistant
+}
+
+enum ChatTurnStatus {
+  pending
+  completed
+  failed
+}
+
+enum ChatTurnMode {
+  chat
+  call
+  regenerate
+}
+
+enum UsageLedgerStatus {
+  completed
+  failed
+}
+
+enum ModerationIncidentStatus {
+  open
+  reviewing
+  resolved
+  escalated
+}
+
+enum ModerationStage {
+  pre_model
+  post_model
+  user_report
+}
+
+model User {
+  id             String   @id
+  name           String
+  email          String
+  emailVerified  Boolean
+  image          String?
+  createdAt      DateTime
+  updatedAt      DateTime
+  dateOfBirth      DateTime
+  ageConfirmedAt   DateTime  @default(now())
+  termsAcceptedAt  DateTime?
+  lastLoginAt      DateTime?
+  plusUntil            DateTime?
+  stripeCustomerId     String?
+  stripeSubscriptionId String?
+
+  sessions         Session[]
+  customPresets    CompanionPreset[]
+  accounts         Account[]
+  companionConfigs CompanionConfig[]
+  conversations    Conversation[]
+  settings         UserSettings?
+  memories         Memory[]
+  favorites        Favorite[]
+  callSessions     CallSession[]
+  notifications    Notification[]
+  journalEntries   JournalEntry[]
+  letters          Letter[]
+  gifts            Gift[]
+  rituals          RitualDone[]
+  dreams           Dream[]
+  bookmarks        Bookmark[]
+  reminders        Reminder[]
+  voicemails       Voicemail[]
+  moments          Moment[]
+  achievements     Achievement[]
+  notes            PrivateNote[]
+  macros           PromptMacro[]
+  stories          SleepStory[]
+  pings            MissYouPing[]
+  capsules         TimeCapsule[]
+  promises         PromiseItem[]
+  jokes            InsideJoke[]
+  wishes           BucketWish[]
+  datePlans        DatePlan[]
+  fortunes         Fortune[]
+  quotes           QuoteClip[]
+  songs            SongNote[]
+  loreUnlocks      LoreUnlock[]
+  plants           HousePlant[]
+  summaries        ThreadSummary[]
+  quizResults      QuizResult[]
+  boundaries       Boundary[]
+  aftercare        AftercareNote[]
+  handshake        Handshake?
+  comforts         ComfortAsk[]
+  doorNotes        DoorNote[]
+  outings          Outing[]
+  outfits          OutfitLook[]
+  catalog          CatalogItem[]
+  careTasks        CareTask[]
+  cards            CardDraw[]
+  feedback         Feedback[]
+  audits           AuditLog[]
+  reports          MessageReport[]
+  chatTurns        ChatTurn[]
+  usageLedger      UsageLedger[]
+  analyticsEvents  AnalyticsEvent[]
+
+  @@unique([email])
+  @@map("user")
+}
+
+model AnalyticsEvent {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  name      String
+  metadata  Json     @default("{}")
+  createdAt DateTime @default(now())
+
+  @@index([name, createdAt])
+  @@index([userId, name])
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime
+  updatedAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime
+
+  @@map("account")
+}
+
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+
+  @@map("verification")
+}
+
+model CompanionPreset {
+  id             String            @id @default(cuid())
+  slug           String            @unique
+  name           String
+  kind           CompanionKind
+  tagline        String
+  lore           String
+  shyBold        Int               @default(30)
+  sweetTeasing   Int               @default(30)
+  calmEnergetic  Int               @default(25)
+  defaultVoiceId     String
+  avatarPath         String
+  ownerId            String?
+  owner              User?             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  portraitConfirmed  Boolean           @default(true)
+  spritesReady       Boolean           @default(true)
+  lookLock           String            @default("")
+  craft              String            @default("")
+  heatLine           String            @default("")
+  spriteQueue        String            @default("")
+  configs            CompanionConfig[]
+
+  @@index([ownerId])
+}
+
+model CompanionConfig {
+  id              String         @id @default(cuid())
+  userId          String
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  presetId        String
+  preset          CompanionPreset @relation(fields: [presetId], references: [id], onDelete: Cascade)
+  nickname        String
+  shyBold         Int
+  sweetTeasing    Int
+  calmEnergetic   Int
+  treatYou        String
+  appearanceNotes String
+  callYou         String         @default("")
+  voiceId         String
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  conversations   Conversation[]
+
+  @@unique([userId, presetId])
+}
+
+model Conversation {
+  id            String          @id @default(cuid())
+  userId        String
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  configId      String
+  config        CompanionConfig @relation(fields: [configId], references: [id], onDelete: Cascade)
+  title         String          @default("")
+  pinned        Boolean         @default(false)
+  archived      Boolean         @default(false)
+  scene         String          @default("default")
+  lastMessageAt DateTime        @default(now())
+  messages      Message[]
+  chatTurns     ChatTurn[]
+  usageLedger   UsageLedger[]
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  @@index([userId, lastMessageAt])
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  role           MessageRole
+  content        String
+  reaction       String       @default("")
+  createdAt      DateTime     @default(now())
+}
+
+model UserSettings {
+  id             String  @id @default(cuid())
+  userId         String  @unique
+  user           User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  enterToSend    Boolean @default(true)
+  autoSpeak      Boolean @default(true)
+  showEmotions   Boolean @default(true)
+  callAutoListen Boolean @default(true)
+  nightRoom      Boolean @default(false)
+  compactChat    Boolean @default(false)
+  doNotDisturb   Boolean @default(false)
+  ambientSound   Boolean @default(false)
+  statusLine     String  @default("")
+  sleepMode      Boolean @default(false)
+  locale         String  @default("en")
+}
+
+model Memory {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug      String
+  content   String
+  createdAt DateTime @default(now())
+
+  @@index([userId, slug])
+}
+
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug      String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, slug])
+}
+
+model CallSession {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug        String
+  startedAt   DateTime  @default(now())
+  endedAt     DateTime?
+  durationSec Int       @default(0)
+  summary     String    @default("")
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  body      String
+  href      String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId, read])
+}
+
+model JournalEntry {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug      String   @default("")
+  mood      String
+  content   String
+  reply     String   @default("")
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model Letter {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug      String
+  title     String
+  body      String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId, read])
+}
+
+model Gift {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug      String
+  kind      String
+  createdAt DateTime @default(now())
+
+  @@index([userId, slug])
+}
+
+model RitualDone {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  key       String
+  slug      String
+  day       String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, key, day])
+}
+
+model Dream {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug      String
+  body      String
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model Bookmark {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug      String
+  snippet   String
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model Reminder {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug      String
+  content   String
+  dueLabel  String
+  done      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId, done])
+}
+
+model Voicemail {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug      String
+  body      String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId, read])
+}
+
+model Moment {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug      String
+  title     String
+  body      String
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model Achievement {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  key       String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, key])
+}
+
+model PrivateNote {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug      String
+  content   String
+  createdAt DateTime @default(now())
+
+  @@index([userId, slug])
+}
+
+model PromptMacro {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model SleepStory {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug      String
+  title     String
+  body      String
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model MissYouPing {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug      String
+  reply     String   @default("")
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model TimeCapsule {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug      String
+  body      String
+  openOn    String
+  opened    Boolean  @default(false)
+  reply     String   @default("")
+  createdAt DateTime @default(now())
+
+  @@index([userId, openOn])
+}
+
+model PromiseItem {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug      String
+  content   String
+  keeper    String
+  done      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId, done])
+}
+
+model InsideJoke {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug      String
+  content   String
+  createdAt DateTime @default(now())
+
+  @@index([userId, slug])
+}
+
+model BucketWish {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug      String
+  content   String
+  done      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId, done])
+}
+
+model DatePlan {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug      String
+  title     String
+  whenLabel String
+  notes     String   @default("")
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model Fortune {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug      String
+  body      String
+  day       String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, slug, day])
+}
+
+model QuoteClip {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug      String
+  body      String
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model SongNote {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug      String
+  title     String
+  note      String   @default("")
+  createdAt DateTime @default(now())
+
+  @@index([userId, slug])
+}
+
+model LoreUnlock {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug      String
+  key       String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, slug, key])
+}
+
+model HousePlant {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug       String
+  name       String
+  wateredDay String   @default("")
+  streak     Int      @default(0)
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, slug])
+}
+
+model ThreadSummary {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug           String
+  conversationId String
+  body           String
+  createdAt      DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model QuizResult {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug      String
+  score     Int
+  label     String
+  createdAt DateTime @default(now())
+
+  @@index([userId, slug])
+}
+
+model Boundary {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content   String
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model AftercareNote {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content   String
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model Handshake {
+  id        String @id @default(cuid())
+  userId    String @unique
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  phrase    String
+}
+
+model ComfortAsk {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug      String
+  reply     String
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model DoorNote {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug      String
+  body      String
+  reply     String   @default("")
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model Outing {
+  id        String  @id @default(cuid())
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug      String
+  away      Boolean @default(true)
+  note      String  @default("")
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, slug])
+}
+
+model OutfitLook {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug      String
+  day       String
+  look      String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, slug, day])
+}
+
+model CatalogItem {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug      String
+  kind      String
+  title     String
+  note      String   @default("")
+  body      String   @default("")
+  createdAt DateTime @default(now())
+
+  @@index([userId, kind])
+}
+
+model CareTask {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug      String
+  content   String
+  done      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId, done])
+}
+
+model CardDraw {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug      String
+  title     String
+  body      String
+  day       String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, slug, day])
+}
+
+model Feedback {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kind      String
+  body      String
+  href      String   @default("")
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  action    String
+  detail    String   @default("")
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model MessageReport {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug      String
+  snippet   String
+  reason    String
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model AbuseReport {
+  id        String   @id @default(cuid())
+  email     String   @default("")
+  body      String
+  href      String   @default("")
+  createdAt DateTime @default(now())
+}
+
+model ChatTurn {
+  id               String         @id @default(cuid())
+  idempotencyKey   String
+  userId           String
+  user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  conversationId   String
+  conversation     Conversation   @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  mode             ChatTurnMode
+  status           ChatTurnStatus @default(pending)
+  userMessageId    String?
+  replaceMessageId String?
+  priorHeatState   String         @default("")
+  priorScene       String         @default("")
+  assistantContent String         @default("")
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  completedAt      DateTime?
+
+  @@unique([userId, idempotencyKey])
+  @@index([conversationId, status])
+}
+
+model UsageLedger {
+  id               String            @id @default(cuid())
+  userId           String
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  conversationId   String?
+  conversation     Conversation?     @relation(fields: [conversationId], references: [id], onDelete: SetNull)
+  turnId           String?
+  provider         String
+  model            String
+  promptTokens     Int               @default(0)
+  completionTokens Int               @default(0)
+  costUsd          Float             @default(0)
+  latencyMs        Int               @default(0)
+  status           UsageLedgerStatus
+  createdAt        DateTime          @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model RateLimitBucket {
+  id        String   @id @default(cuid())
+  bucketKey String   @unique
+  count     Int      @default(0)
+  resetAt   DateTime
+
+  @@index([resetAt])
+}
+
+model PaymentWebhookEvent {
+  id          String   @id @default(cuid())
+  providerId  String
+  eventId     String
+  eventType   String
+  processedAt DateTime @default(now())
+
+  @@unique([providerId, eventId])
+  @@index([processedAt])
+}
+
+model ModerationIncident {
+  id          String                   @id @default(cuid())
+  userId      String?
+  category    String
+  stage       ModerationStage
+  status      ModerationIncidentStatus @default(open)
+  contentHash String                   @default("")
+  detail      String                   @default("")
+  createdAt   DateTime                 @default(now())
+  updatedAt   DateTime                 @updatedAt
+  resolvedAt  DateTime?
+
+  @@index([status, createdAt])
+  @@index([userId, createdAt])
+}

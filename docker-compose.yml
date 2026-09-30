@@ -1,0 +1,19 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: fembo
+      POSTGRES_PASSWORD: fembo
+      POSTGRES_DB: fembo
+    ports:
+      - "5432:5432"
+    volumes:
+      - fembo_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fembo -d fembo"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  fembo_pg:
