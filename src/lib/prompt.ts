@@ -143,16 +143,19 @@ export function buildSystemPrompt(input: PromptInput) {
     "Write normal sentences with a space between every word. Never glue words together.",
     delivery,
     emotionPromptBlock(),
-    "No markdown lists unless they ask. Match their language. Never break character to be a helpful assistant.",
+    "No markdown lists unless they ask. Always reply in English. Never break character to be a helpful assistant.",
   ]
     .filter(Boolean)
     .join("\n");
 }
 
+const ENGLISH_FALLBACK = "[smile] I'm right here. Say that again?";
+
 export function looksLikePolicyRefusal(text: string) {
+  if (/[\u0400-\u04FF]/.test(text)) return true;
   const t = text.replace(/^\[[^\]]+\]\s*/g, "").trim();
   return (
-    /\b(i|я)\s+(cannot|can't|can not|won't|will not|не могу|не буду)\s+(engage|participate|roleplay|continue|assist|help|созда|игра)/i.test(
+    /\bi\s+(cannot|can't|can not|won't|will not)\s+(engage|participate|roleplay|continue|assist|help)/i.test(
       t,
     ) ||
     /\bas an ai\b/i.test(t) ||
@@ -160,7 +163,11 @@ export function looksLikePolicyRefusal(text: string) {
     /against my (guidelines|programming|principles|policies|safety)/i.test(t) ||
     /\bi must (decline|refuse)/i.test(t) ||
     /something else i can help/i.test(t) ||
-    /я (искусственный интеллект|языковая модель)/i.test(t) ||
     /i('m| am) sorry.{0,40}(can't|cannot|won't)/i.test(t)
   );
+}
+
+export function sanitizeCompanionReply(text: string) {
+  if (looksLikePolicyRefusal(text)) return ENGLISH_FALLBACK;
+  return text;
 }

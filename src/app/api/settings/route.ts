@@ -74,7 +74,7 @@ export async function PATCH(request: Request) {
 
       ...(parsed.data.sleepMode !== undefined ? { sleepMode: parsed.data.sleepMode } : {}),
 
-      ...(parsed.data.locale !== undefined ? { locale: parsed.data.locale } : {}),
+      locale: "en",
 
     },
 

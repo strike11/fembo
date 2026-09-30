@@ -276,9 +276,9 @@ export function spriteToExpression(content: string): FemboyExpression {
   if (match?.[1]) {
     return SPRITE_TO_EXPRESSION[match[1].toLowerCase()] ?? "smile";
   }
-  if (/\b(sleep|yawn|tired|сонн|устал)\b/i.test(content)) return "sleepy";
-  if (/\b(wow|gasp|surpris|удив)\b/i.test(content)) return "surprised";
-  if (/\b(blush|shy|fluster|смущ|стесн)\b/i.test(content)) return "blushy";
-  if (/\b(wink|tease|подмиг)\b/i.test(content)) return "wink";
+  if (/\b(sleep|yawn|tired)\b/i.test(content)) return "sleepy";
+  if (/\b(wow|gasp|surpris)\b/i.test(content)) return "surprised";
+  if (/\b(blush|shy|fluster)\b/i.test(content)) return "blushy";
+  if (/\b(wink|tease)\b/i.test(content)) return "wink";
   return "smile";
 }

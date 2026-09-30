@@ -50,7 +50,8 @@ export const companionConfigSchema = z.object({
     .trim()
     .min(3)
     .max(80)
-    .regex(/^[a-zA-Z0-9_.:-]+$/, "Use a Piper voice id"),
+    .regex(/^[a-zA-Z0-9_.:-]+$/, "Use a Piper voice id")
+    .refine((id) => !id.toLowerCase().startsWith("ru_"), "Choose an English voice"),
 });
 
 export const slugSchema = z
@@ -109,7 +110,7 @@ export const settingsSchema = z.object({
   statusLine: z.string().trim().max(80).optional(),
   sleepMode: z.boolean().optional(),
   name: z.string().trim().min(2).max(40),
-  locale: z.enum(["en", "ru"]).optional(),
+  locale: z.literal("en").optional(),
 });
 
 export const presenceSchema = z.object({

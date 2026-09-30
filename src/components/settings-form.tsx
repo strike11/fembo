@@ -23,7 +23,6 @@ export function SettingsForm({
   ambientSound,
   statusLine,
   sleepMode,
-  locale = "en",
 }: {
   name: string;
   email: string;
@@ -37,7 +36,6 @@ export function SettingsForm({
   ambientSound: boolean;
   statusLine: string;
   sleepMode: boolean;
-  locale?: string;
 }) {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -51,8 +49,7 @@ export function SettingsForm({
   const [ambient, setAmbient] = useState(ambientSound);
   const [status, setStatus] = useState(statusLine);
   const [asleep, setAsleep] = useState(sleepMode);
-  const [lang, setLang] = useState(locale === "ru" ? "ru" : "en");
-  const ui = asLocale(lang);
+  const ui = asLocale("en");
   const { setTheme } = useTheme();
 
   async function onSubmit(formData: FormData) {
@@ -73,7 +70,7 @@ export function SettingsForm({
         ambientSound: ambient,
         statusLine: status,
         sleepMode: asleep,
-        locale: lang,
+        locale: "en",
       }),
     });
     const payload = (await response.json()) as { error?: string };
@@ -102,19 +99,6 @@ export function SettingsForm({
         <Field data-disabled>
           <FieldLabel htmlFor="email">{t(ui, "email")}</FieldLabel>
           <Input id="email" value={email} disabled />
-        </Field>
-        <Field>
-          <FieldLabel htmlFor="locale">{t(ui, "language")}</FieldLabel>
-          <select
-            id="locale"
-            value={lang}
-            onChange={(event) => setLang(event.target.value)}
-            className="h-8 rounded-lg border border-input bg-transparent px-2.5 text-sm"
-          >
-            <option value="en">English</option>
-            <option value="ru">Русский</option>
-          </select>
-          <FieldDescription>{t(ui, "languageHint")}</FieldDescription>
         </Field>
         <Field orientation="horizontal">
           <Switch id="enter" checked={enter} onCheckedChange={setEnter} />

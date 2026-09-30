@@ -15,7 +15,6 @@ import { cn } from "@/lib/utils";
 
 type MobileBottomNavProps = {
   locale?: string;
-  houseExtras?: boolean;
 };
 
 const PRIMARY = [
@@ -40,7 +39,7 @@ const PRIMARY = [
   },
 ] as const;
 
-export function MobileBottomNav({ locale = "en", houseExtras = false }: MobileBottomNavProps) {
+export function MobileBottomNav({ locale = "en" }: MobileBottomNavProps) {
   const pathname = usePathname();
   const lang = asLocale(locale);
   const [moreOpen, setMoreOpen] = useState(false);
@@ -57,17 +56,19 @@ export function MobileBottomNav({ locale = "en", houseExtras = false }: MobileBo
 
   const moreActive =
     pathname.startsWith("/app/saved") ||
-    pathname.startsWith("/app/house") ||
+    pathname.startsWith("/app/memories") ||
+    pathname.startsWith("/app/boundaries") ||
     pathname.startsWith("/app/settings") ||
     pathname.startsWith("/app/plus") ||
     pathname.startsWith("/app/create");
 
   const moreLinks = [
     { href: "/app/saved", label: t(lang, "navSaved") },
+    { href: "/app/memories", label: t(lang, "memories") },
+    { href: "/app/boundaries", label: t(lang, "boundaries") },
     { href: "/app/create", label: t(lang, "create") },
     { href: "/app/plus", label: t(lang, "plus") },
     { href: "/app/settings", label: t(lang, "navSettings") },
-    ...(houseExtras ? [{ href: "/app/house", label: t(lang, "navHouse") }] : []),
     { href: "/app/help", label: "Help" },
   ];
 

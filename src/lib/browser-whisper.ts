@@ -2,7 +2,10 @@ import { encodeWav, resampleMono } from "@/lib/wav";
 
 export type WhisperStatus = "uploading" | "downloading" | "transcribing";
 
-type Asr = (audio: string, options?: { task?: "transcribe" }) => Promise<{ text?: string } | Array<{ text?: string }>>;
+type Asr = (
+  audio: string,
+  options?: { task?: "transcribe"; language?: string },
+) => Promise<{ text?: string } | Array<{ text?: string }>>;
 
 let pipelinePromise: Promise<Asr | null> | null = null;
 
@@ -57,8 +60,7 @@ async function transcribeLocal(
   const wav = encodeWav(resampleMono(samples, sampleRate, 16_000), 16_000);
   const url = URL.createObjectURL(wav);
   try {
-    const language = navigator.language.toLowerCase().startsWith("ru") ? "russian" : undefined;
-    const result = await asr(url, language ? { task: "transcribe", language } as { task: "transcribe" } : { task: "transcribe" });
+    const result = await asr(url, { task: "transcribe", language: "english" });
     const text = Array.isArray(result) ? result[0]?.text : result.text;
     return text?.trim() ?? "";
   } finally {

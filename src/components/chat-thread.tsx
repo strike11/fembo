@@ -1,15 +1,12 @@
 "use client";
 
 import {
-  BookmarkIcon,
   CopyIcon,
   FlagIcon,
-  HeartIcon,
   MicIcon,
   MoonIcon,
   PhoneIcon,
   PinIcon,
-  QuoteIcon,
   RefreshCwIcon,
   SendIcon,
   SquarePenIcon,
@@ -30,7 +27,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { useAmbient } from "@/hooks/use-ambient";
 import { usePiper } from "@/hooks/use-piper";
 import { useSpeech } from "@/hooks/use-speech";
-import { GiftTray } from "@/components/gift-tray";
 import { QuotaBar } from "@/components/quota-bar";
 import { fetchBillingStatus, type BillingStatus } from "@/lib/billing-client";
 import { companionExtra } from "@/lib/companions";
@@ -113,13 +109,10 @@ export function ChatThread({
   );
   const [error, setError] = useState<string | null>(null);
   const [scene, setScene] = useState<SceneId>(sceneById(initialScene).id);
-  const [showGifts, setShowGifts] = useState(false);
   const [filter, setFilter] = useState("");
-  const [macros, setMacros] = useState<Array<{ id: string; title: string; content: string }>>([]);
   const [draftReady, setDraftReady] = useState(false);
   const [asleep, setAsleep] = useState(sleepMode);
   const [presence, setPresence] = useState(statusLine);
-  const [away, setAway] = useState(false);
   const [failedSend, setFailedSend] = useState<string | null>(null);
   const [billing, setBilling] = useState<BillingStatus | null>(null);
   const [moreOpen, setMoreOpen] = useState(false);
@@ -140,15 +133,6 @@ export function ChatThread({
 
   useEffect(() => {
     void fetchBillingStatus().then(setBilling).catch(() => undefined);
-  }, []);
-
-  useEffect(() => {
-    void fetch("/api/macros")
-      .then((response) => response.json())
-      .then((payload: { macros?: Array<{ id: string; title: string; content: string }> }) => {
-        setMacros(payload.macros ?? []);
-      })
-      .catch(() => undefined);
   }, []);
 
   useEffect(() => {
@@ -287,9 +271,7 @@ export function ChatThread({
 
   function continueScene() {
     void send(
-      lang === "ru"
-        ? "Продолжи с того же места. Не начинай заново."
-        : "Continue from the last word. Do not restart the scene.",
+      "Continue from the last word. Do not restart the scene.",
     );
   }
 
@@ -387,67 +369,6 @@ export function ChatThread({
     URL.revokeObjectURL(url);
   }
 
-  async function askComfort() {
-    const response = await fetch("/api/comfort", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ slug }),
-    });
-    const payload = (await response.json()) as { comfort?: { reply: string }; error?: string };
-    if (!response.ok || !payload.comfort) {
-      toast.error(payload.error ?? "The room stayed quiet");
-      return;
-    }
-    toast.success(payload.comfort.reply);
-  }
-
-  async function toggleOuting() {
-    const next = !away;
-    const response = await fetch("/api/outings", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ slug, away: next, note: next ? "Out for a bit" : "" }),
-    });
-    const payload = (await response.json()) as { reply?: string; error?: string };
-    if (!response.ok) {
-      toast.error(payload.error ?? "The latch stuck");
-      return;
-    }
-    setAway(next);
-    if (payload.reply) toast.success(payload.reply);
-  }
-
-  async function drawCard() {
-    const response = await fetch("/api/cards", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ slug }),
-    });
-    const payload = (await response.json()) as {
-      card?: { title: string; body: string };
-      error?: string;
-    };
-    if (!response.ok || !payload.card) {
-      toast.error(payload.error ?? "The deck stayed closed");
-      return;
-    }
-    toast.success(`${payload.card.title}: ${payload.card.body}`);
-  }
-
-  async function missYou() {
-    const response = await fetch("/api/pings", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ slug }),
-    });
-    const payload = (await response.json()) as { ping?: { reply: string }; error?: string };
-    if (!response.ok || !payload.ping) {
-      toast.error(payload.error ?? "They did not hear it");
-      return;
-    }
-    toast.success(payload.ping.reply);
-  }
-
   async function setPresenceLine(line: string, nextSleep = asleep) {
     setPresence(line);
     setAsleep(nextSleep);
@@ -456,21 +377,6 @@ export function ChatThread({
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ statusLine: line, sleepMode: nextSleep }),
     });
-  }
-
-  async function quoteLine(content: string) {
-    const body = stripEmotionMarkup(content).slice(0, 280);
-    if (!body) return;
-    const response = await fetch("/api/quotes", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ slug, body }),
-    });
-    if (!response.ok) {
-      toast.error("Could not pin quote");
-      return;
-    }
-    toast.success("Pinned to the quote wall");
   }
 
   async function summarizeThread() {
@@ -485,21 +391,6 @@ export function ChatThread({
       return;
     }
     toast.success(payload.summary.body.slice(0, 120));
-  }
-
-  async function bookmark(content: string) {
-    const snippet = stripEmotionMarkup(content).slice(0, 280);
-    if (!snippet) return;
-    const response = await fetch("/api/bookmarks", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ slug, snippet }),
-    });
-    if (!response.ok) {
-      toast.error(t(lang, "errorBookmarkFailed"));
-      return;
-    }
-    toast.success(t(lang, "savedToBookmarks"));
   }
 
   async function react(id: string, reaction: string) {
@@ -578,13 +469,6 @@ export function ChatThread({
               <Button type="button" variant="ghost" size="sm" onClick={exportChat} disabled={messages.length === 0}>
                 {t(lang, "exportChat")}
               </Button>
-              <Button type="button" variant="ghost" size="sm" onClick={() => setShowGifts((value) => !value)}>
-                {t(lang, "gift")}
-              </Button>
-              <Button type="button" variant="ghost" size="sm" onClick={() => void missYou()}>
-                <HeartIcon />
-                {t(lang, "missYou")}
-              </Button>
               <Button
                 type="button"
                 variant="ghost"
@@ -603,25 +487,10 @@ export function ChatThread({
                 <MoonIcon />
                 {asleep ? t(lang, "asleep") : t(lang, "sleep")}
               </Button>
-              <Button type="button" variant="ghost" size="sm" onClick={() => void askComfort()}>
-                {t(lang, "comfort")}
-              </Button>
-              <Button
-                type="button"
-                variant={away ? "secondary" : "ghost"}
-                size="sm"
-                onClick={() => void toggleOuting()}
-              >
-                {away ? t(lang, "imBack") : t(lang, "imOut")}
-              </Button>
-              <Button type="button" variant="ghost" size="sm" onClick={() => void drawCard()}>
-                {t(lang, "card")}
-              </Button>
                 </>
               ) : null}
             </div>
           </div>
-          {showGifts ? <GiftTray slug={slug} /> : null}
           {moreOpen ? (
           <div className="flex flex-wrap gap-1 px-1">
             <span className="self-center px-1 text-[10px] tracking-wide text-muted-foreground uppercase">
@@ -665,20 +534,6 @@ export function ChatThread({
               </button>
             ))}
           </div>
-          ) : null}
-          {macros.length > 0 ? (
-            <div className="flex flex-wrap gap-1 px-1">
-              {macros.map((macro) => (
-                <button
-                  key={macro.id}
-                  type="button"
-                  className="rounded-full bg-muted px-2.5 py-1 text-xs hover:bg-accent"
-                  onClick={() => void send(macro.content)}
-                >
-                  {macro.title}
-                </button>
-              ))}
-            </div>
           ) : null}
           <QuotaBar status={billing} locale={lang} />
           {error ? (
@@ -800,6 +655,7 @@ export function ChatThread({
               <div className="flex flex-col gap-1">
                 <h2 className="font-heading text-2xl font-semibold">{nickname}</h2>
                 <p className="text-sm text-muted-foreground">{extras.vibe}</p>
+                <p className="max-w-sm text-sm leading-6 text-muted-foreground">{t(lang, "rememberHint")}</p>
               </div>
               {showEmotions ? (
                 <div className="flex flex-wrap justify-center gap-1.5">
@@ -877,25 +733,7 @@ export function ChatThread({
                     ""
                   )}
                   {message.content ? (
-                    <div className="mt-2 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon-xs"
-                        aria-label="Bookmark"
-                        onClick={() => void bookmark(message.content)}
-                      >
-                        <BookmarkIcon />
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon-xs"
-                        aria-label="Pin quote"
-                        onClick={() => void quoteLine(message.content)}
-                      >
-                        <QuoteIcon />
-                      </Button>
+                    <div className="mt-2 flex gap-1 sm:opacity-0 sm:transition-opacity sm:group-hover:opacity-100">
                       {message.role === "assistant" ? (
                         <Button
                           type="button"

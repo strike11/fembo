@@ -6,7 +6,7 @@ import "./globals.css";
 
 const nunito = Nunito({
   variable: "--font-nunito",
-  subsets: ["latin", "cyrillic"],
+  subsets: ["latin"],
 });
 
 const quicksand = Quicksand({

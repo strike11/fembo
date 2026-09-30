@@ -1,18 +1,7 @@
 import { after } from "next/server";
 import { redirect } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
-import {
-  ensureDailyDreams,
-  ensureDailyFortunes,
-  ensureDailyLetters,
-  ensureDailyLook,
-  ensureMorningLine,
-  openDueCapsules,
-  unlockAchievements,
-  welcomeIfNeeded,
-} from "@/lib/companion-service";
-import { ensureUserSettings } from "@/lib/companion-service";
-import { houseExtrasEnabled } from "@/lib/env";
+import { ensureUserSettings, welcomeIfNeeded } from "@/lib/companion-service";
 import { listRecents } from "@/lib/platform";
 import { getSession } from "@/lib/session";
 
@@ -28,16 +17,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   const userId = session.user.id;
   after(() => {
-    void Promise.all([
-      welcomeIfNeeded(userId, session.user.name),
-      ensureMorningLine(userId),
-      ensureDailyLetters(userId),
-      ensureDailyDreams(userId),
-      ensureDailyFortunes(userId),
-      ensureDailyLook(userId),
-      openDueCapsules(userId),
-      unlockAchievements(userId),
-    ]);
+    void welcomeIfNeeded(userId, session.user.name);
   });
 
   const [recents, settings] = await Promise.all([
@@ -46,12 +26,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   ]);
 
   return (
-    <AppShell
-      name={session.user.name}
-      recents={recents}
-      locale={settings.locale}
-      houseExtras={houseExtrasEnabled()}
-    >
+    <AppShell name={session.user.name} recents={recents} locale={settings.locale}>
       {children}
     </AppShell>
   );

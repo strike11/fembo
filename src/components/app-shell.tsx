@@ -17,13 +17,11 @@ export function AppShell({
   name,
   recents,
   locale = "en",
-  houseExtras = false,
   children,
 }: {
   name: string;
   recents: SidebarRecent[];
   locale?: string;
-  houseExtras?: boolean;
   children: ReactNode;
 }) {
   const pathname = usePathname();
@@ -39,7 +37,7 @@ export function AppShell({
   return (
     <div className="flex h-dvh overflow-hidden">
       <div className="hidden md:flex">
-        <AppSidebar name={name} recents={recents} locale={locale} houseExtras={houseExtras} />
+        <AppSidebar name={name} recents={recents} locale={locale} />
       </div>
       {open ? (
         <div className="fixed inset-0 z-40 flex md:hidden">
@@ -50,7 +48,7 @@ export function AppShell({
             onClick={() => setOpen(false)}
           />
           <div className="relative z-10 h-full">
-            <AppSidebar name={name} recents={recents} locale={locale} houseExtras={houseExtras} />
+            <AppSidebar name={name} recents={recents} locale={locale} />
           </div>
         </div>
       ) : null}
@@ -68,7 +66,7 @@ export function AppShell({
           <span className="text-sm font-medium">Fembo</span>
         </div>
         <div className={cn("flex min-h-0 flex-1 flex-col pb-14 md:pb-0")}>{children}</div>
-        <MobileBottomNav locale={locale} houseExtras={houseExtras} />
+        <MobileBottomNav locale={locale} />
       </div>
       <CommandPalette />
       <ShortcutsHelp />

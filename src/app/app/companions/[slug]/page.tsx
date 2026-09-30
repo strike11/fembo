@@ -5,6 +5,7 @@ import { ChatThreadLoader } from "@/components/chat-thread-loader";
 import { CompanionPortrait } from "@/components/companion-portrait";
 import { RoomModes } from "@/components/room-modes";
 import { buttonVariants } from "@/components/ui/button";
+import { englishVoiceId } from "@/lib/companions";
 import { ensureCompanionConfig, ensureUserSettings } from "@/lib/companion-service";
 import { prisma } from "@/lib/db";
 import { getSession } from "@/lib/session";
@@ -94,7 +95,7 @@ export default async function CompanionChatPage({
         nickname={ensured.config.nickname}
         avatarPath={ensured.preset.avatarPath}
         lookLock={ensured.preset.lookLock}
-        voiceId={ensured.config.voiceId}
+        voiceId={englishVoiceId(ensured.config.voiceId)}
         conversationId={ensured.conversation.id}
         initialMessages={messages}
         enterToSend={settings.enterToSend}

@@ -45,12 +45,10 @@ export function AppSidebar({
   name,
   recents,
   locale = "en",
-  houseExtras = false,
 }: {
   name: string;
   recents: SidebarRecent[];
   locale?: string;
-  houseExtras?: boolean;
 }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -141,19 +139,28 @@ export function AppSidebar({
         >
           {t(lang, "navSaved")}
         </Link>
-        {houseExtras ? (
-          <Link
-            href="/app/house"
-            className={cn(
-              "rounded-xl px-3 py-1.5 text-sm transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-              pathname.startsWith("/app/house")
-                ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                : "text-sidebar-foreground hover:bg-sidebar-accent/70",
-            )}
-          >
-            {t(lang, "navHouse")}
-          </Link>
-        ) : null}
+        <Link
+          href="/app/memories"
+          className={cn(
+            "rounded-xl px-3 py-1.5 text-sm transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+            pathname.startsWith("/app/memories")
+              ? "bg-sidebar-accent text-sidebar-accent-foreground"
+              : "text-sidebar-foreground hover:bg-sidebar-accent/70",
+          )}
+        >
+          {t(lang, "memories")}
+        </Link>
+        <Link
+          href="/app/boundaries"
+          className={cn(
+            "rounded-xl px-3 py-1.5 text-sm transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+            pathname.startsWith("/app/boundaries")
+              ? "bg-sidebar-accent text-sidebar-accent-foreground"
+              : "text-sidebar-foreground hover:bg-sidebar-accent/70",
+          )}
+        >
+          {t(lang, "boundaries")}
+        </Link>
       </div>
       <div className="mt-4 min-h-0 flex-1 overflow-y-auto px-2">
         <p className="px-3 pb-2 text-xs font-medium tracking-wide text-muted-foreground uppercase">

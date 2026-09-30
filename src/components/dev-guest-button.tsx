@@ -24,7 +24,7 @@ export function DevGuestButton({
     const response = await fetch("/api/dev/guest", { method: "POST" });
     setPending(false);
     if (!response.ok) {
-      setError("Не получилось войти без аккаунта");
+      setError("Could not continue without an account");
       return;
     }
     router.push("/app");
@@ -35,7 +35,7 @@ export function DevGuestButton({
     <div className="flex flex-col gap-2">
       <Button type="button" variant={variant} size={size} className={className} disabled={pending} onClick={() => void enter()}>
         {pending ? <Spinner data-icon="inline-start" /> : null}
-        Войти без аккаунта
+        Continue without an account
       </Button>
       {error ? <p className="text-sm text-destructive">{error}</p> : null}
     </div>

@@ -7,7 +7,7 @@ import {
   resolveChatProviders,
   type ChatMessage,
 } from "@/lib/chat-provider";
-import { looksLikePolicyRefusal } from "@/lib/prompt";
+import { looksLikePolicyRefusal, sanitizeCompanionReply } from "@/lib/prompt";
 import { applyStreamPiece } from "@/lib/stream-text";
 import {
   completeChatTurn,
@@ -48,13 +48,19 @@ export async function streamCompanionChat({
   const stream = new ReadableStream({
     async start(controller) {
       try {
-        const full = await runCompanionTurn({
+        let full = await runCompanionTurn({
           model: resolvedModel,
           messages: baseMessages,
           encoder,
           controller,
           emit: true,
         });
+        const safe = sanitizeCompanionReply(full);
+        if (safe !== full) {
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ reset: true })}\n\n`));
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ delta: safe })}\n\n`));
+          full = safe;
+        }
 
         if (persistAssistant && conversationId && full.trim()) {
           if (turn) {

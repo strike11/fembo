@@ -76,10 +76,3 @@ export function assertProductionEnv(env: ProductionEnv = process.env) {
 export function isMaintenanceMode() {
   return process.env.MAINTENANCE_MODE === "1";
 }
-
-export function houseExtrasEnabled(env: ProductionEnv = process.env) {
-  const raw = env.HOUSE_EXTRAS_ENABLED?.trim().toLowerCase();
-  if (raw === "1" || raw === "true" || raw === "yes") return true;
-  if (raw === "0" || raw === "false" || raw === "no") return false;
-  return env.NODE_ENV !== "production";
-}

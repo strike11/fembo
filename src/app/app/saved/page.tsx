@@ -1,9 +1,4 @@
-import {
-  ArchiveIcon,
-  BookmarkIcon,
-  CameraIcon,
-  SparklesIcon,
-} from "lucide-react";
+import { ArchiveIcon, SparklesIcon } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { PageIntro } from "@/components/page-intro";
@@ -17,18 +12,6 @@ const ITEMS = [
     icon: SparklesIcon,
     titleKey: "savedMemories" as const,
     hintKey: "savedMemoriesHint" as const,
-  },
-  {
-    href: "/app/bookmarks",
-    icon: BookmarkIcon,
-    titleKey: "savedBookmarks" as const,
-    hintKey: "savedBookmarksHint" as const,
-  },
-  {
-    href: "/app/moments",
-    icon: CameraIcon,
-    titleKey: "savedMoments" as const,
-    hintKey: "savedMomentsHint" as const,
   },
   {
     href: "/app/archive",

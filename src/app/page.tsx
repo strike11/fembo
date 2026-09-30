@@ -13,7 +13,7 @@ import { COMPANION_PRESETS, companionExtra } from "@/lib/companions";
 import { getSession } from "@/lib/session";
 
 export const metadata: Metadata = {
-  title: "Fembo — милое и нежное место",
+  title: "Fembo — a cute, gentle place",
   description:
     "A cute, gentle 16+ femboy companion house. Chat, create your own companion, place a live voice call, and keep the facts they should not forget.",
   openGraph: {
@@ -31,13 +31,11 @@ const STATS = [
 ];
 
 const HOUSE = [
-  { title: "Letters", body: "Morning notes that arrive without you asking.", span: "md:col-span-4" },
-  { title: "Voice calls", body: "They pick up, speak in short lines, and listen again.", span: "md:col-span-2" },
-  { title: "Rituals", body: "Tea, check-in, walk, goodnight — a small daily shape.", span: "md:col-span-2" },
-  { title: "Garden", body: "A plant that waits. Water it when you remember them.", span: "md:col-span-2" },
-  { title: "Journal", body: "A mood, a page, a reply that stays in the house.", span: "md:col-span-2" },
-  { title: "Time capsules", body: "Seal a line for a later you. They open it when it's due.", span: "md:col-span-3" },
-  { title: "Night room", body: "Rain, sleep stories, a quieter light after hours.", span: "md:col-span-3" },
+  { title: "One thread", body: "Chat and calls share the same evening. Hanging up does not wipe it.", span: "md:col-span-3" },
+  { title: "Memory", body: "Say “remember …” and the fact stays. They do not invent a diary behind your back.", span: "md:col-span-3" },
+  { title: "Voice", body: "They pick up, speak in short lines, and listen again. Speech skips the emotion tags.", span: "md:col-span-2" },
+  { title: "Scenes", body: "Night, rain, tea, a walk, the couch. The room changes. The person does not.", span: "md:col-span-2" },
+  { title: "Boundaries", body: "Lines you write once. They go into every chat and every call.", span: "md:col-span-2" },
 ];
 
 const STEPS = [
@@ -54,7 +52,7 @@ const SAFETY = [
 
 const FAQ = [
   ["Is Fembo 18+?", "Fembo is 16 or older. Age is checked at signup."],
-  ["Do they remember everything?", "No. They keep what you pin or say “remember …” about, plus a few house notes you add."],
+  ["Do they remember everything?", "No. They keep what you pin or say “remember …” about, plus boundaries and comfort notes on their profile."],
   ["How does voice work?", "Piper runs in the browser. You can skip the download and stay on text. Calls use the same conversation."],
   ["Can I create my own femboy?", "Yes — Plus lets you craft a custom companion with cute emotion sprites."],
   ["Is there adult content?", "No. Fembo is a gentle, SFW platform for supportive companion chat."],
@@ -75,7 +73,7 @@ export default async function HomePage() {
               Chat · Call · Remember
             </Badge>
             <h1 className="font-heading text-5xl leading-[1.05] font-semibold tracking-tight text-balance sm:text-6xl lg:text-7xl">
-              Милое и нежное место.
+              A cute, gentle place.
             </h1>
             <p className="max-w-xl text-lg leading-8 text-muted-foreground">
               Fembo is a cute, gentle companion house for 16+. Pick a supportive femboy, create your
@@ -141,10 +139,9 @@ export default async function HomePage() {
         <section id="house" className="mx-auto flex w-full max-w-6xl scroll-mt-24 flex-col gap-10 px-4 py-20 sm:px-6">
           <div className="flex max-w-2xl flex-col gap-3">
             <p className="text-sm font-medium tracking-wide text-muted-foreground uppercase">More than a chat box</p>
-            <h2 className="font-heading text-4xl font-semibold tracking-tight">Rooms that keep a life going.</h2>
+            <h2 className="font-heading text-4xl font-semibold tracking-tight">A room, not a pile of apps.</h2>
             <p className="text-lg leading-8 text-muted-foreground">
-              Letters, rituals, a garden, capsules, care. The companion is the center. The house is
-              why you come back.
+              The companion is the center. Memory, voice, and a few scenes are why you come back.
             </p>
           </div>
           <div className="grid gap-3 md:grid-cols-6">

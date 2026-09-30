@@ -1,4 +1,4 @@
-import { ensureCompanionConfig, unlockLoreForSlug } from "@/lib/companion-service";
+import { ensureCompanionConfig } from "@/lib/companion-service";
 
 import { buildCompanionTurn } from "@/lib/companion-turn";
 
@@ -183,8 +183,6 @@ export async function POST(request: Request) {
 
 
     void rememberFact(session.user.id, parsed.data.slug, parsed.data.content);
-
-    void unlockLoreForSlug(session.user.id, parsed.data.slug);
 
 
 

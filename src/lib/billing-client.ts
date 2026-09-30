@@ -17,9 +17,9 @@ export async function fetchBillingStatus(): Promise<BillingStatus | null> {
   return (await response.json()) as BillingStatus;
 }
 
-export function formatRetryAt(iso: string | null, locale: string) {
+export function formatRetryAt(iso: string | null, _locale: string) {
   if (!iso) return "";
-  return new Date(iso).toLocaleString(locale === "ru" ? "ru-RU" : "en-US", {
+  return new Date(iso).toLocaleString("en-US", {
     month: "short",
     day: "numeric",
     hour: "numeric",

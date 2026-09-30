@@ -2,7 +2,7 @@ import Link from "next/link";
 import { PageIntro } from "@/components/page-intro";
 
 const SHORTCUTS = [
-  ["Ctrl+K", "Jump to any room"],
+  ["Ctrl+K", "Jump to a room"],
   ["?", "Open shortcuts overlay"],
   ["Enter", "Send a message (if enabled)"],
   ["Shift+Enter", "New line in chat"],
@@ -10,39 +10,28 @@ const SHORTCUTS = [
 ];
 
 const ROOMS = [
-  ["/app/status", "Now board"],
-  ["/app/insights", "Bond insights"],
-  ["/app/notes", "Private notes"],
-  ["/app/macros", "Saved lines"],
-  ["/app/stories", "Sleep stories"],
-  ["/app/pings", "Miss-you pings"],
-  ["/app/shelf", "Gift shelf"],
-  ["/app/keeps", "Keeps drawer"],
-  ["/app/capsules", "Time capsules"],
-  ["/app/garden", "Garden"],
-  ["/app/fortune", "Daily fortune"],
-  ["/app/lore", "Secrets"],
-  ["/app/dates", "Dates"],
-  ["/app/calendar", "Calendar"],
-  ["/app/care", "Care rooms"],
+  ["/app", "Home"],
+  ["/app/explore", "Companions"],
+  ["/app/companions", "Chats"],
+  ["/app/calls", "Calls"],
+  ["/app/memories", "Memories"],
   ["/app/boundaries", "Boundaries"],
-  ["/app/comfort", "Comfort"],
-  ["/app/system", "System status"],
+  ["/app/archive", "Older threads"],
+  ["/app/saved", "Saved"],
+  ["/app/create", "Create your femboy"],
+  ["/app/plus", "Plus"],
+  ["/app/settings", "Settings"],
+  ["/app/data", "Your data"],
   ["/app/sessions", "Sessions"],
   ["/app/feedback", "Feedback"],
-  ["/app/data", "Your data"],
   ["/support", "Support"],
-  ["/app/rituals", "Daily rituals"],
-  ["/app/settings", "Room settings"],
-  ["/app/plus", "Plus"],
-  ["/app/create", "Create your femboy"],
 ];
 
 export default function HelpPage() {
   return (
-    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-8 overflow-y-auto px-4 py-8">
+    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-8 overflow-y-auto px-4 py-8 pb-24 md:pb-8">
       <PageIntro eyebrow="Help" title="How to move around">
-        <p>Keys, rooms, and a few habits the house already understands.</p>
+        <p>Chat, call, and the few rooms that keep a companion close.</p>
       </PageIntro>
       <section className="rounded-2xl bg-card p-4 ring-1 ring-border">
         <p className="text-sm font-medium">Shortcuts</p>
@@ -63,8 +52,8 @@ export default function HelpPage() {
           </Link>
         ))}
       </section>
-      <p className="text-sm text-muted-foreground">
-        Say “remember …” in chat to store a fact. Voice never reads emotion chips. Fembo is a gentle 16+ platform.
+      <p className="text-sm leading-6 text-muted-foreground">
+        Say “remember …” in chat to store a fact. Voice never reads emotion chips. Boundaries on a companion’s profile apply to every chat and call. Fembo is a gentle 16+ platform.
       </p>
     </main>
   );

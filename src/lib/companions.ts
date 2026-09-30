@@ -20,9 +20,12 @@ export const SOFT_VOICES = [
   { id: "en_US-amy-medium", label: "Amy Warm (US)" },
   { id: "en_US-kristin-medium", label: "Kristin Light (US)" },
   { id: "en_US-ljspeech-medium", label: "LJ Speech Soft (US)" },
-  { id: "ru_RU-irina-medium", label: "Irina Soft (RU)" },
-  { id: "ru_RU-dmitri-medium", label: "Dmitri Warm (RU)" },
 ] as const;
+
+export function englishVoiceId(id: string | null | undefined) {
+  if (!id || id.toLowerCase().startsWith("ru_")) return SOFT_VOICES[0].id;
+  return id;
+}
 
 export type CompanionExtra = {
   vibe: string;

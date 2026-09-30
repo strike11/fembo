@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { SOFT_VOICES } from "@/lib/companions";
+import { englishVoiceId, SOFT_VOICES } from "@/lib/companions";
 import {
   ACCESSORIES,
   BLUSH_LEVELS,
@@ -69,34 +69,6 @@ const LABELS = {
       wink: "Wink",
       surprised: "Surprised",
       sleepy: "Sleepy",
-    },
-  },
-  ru: {
-    hairStyle: {
-      fluffy_short: "Пушистые",
-      long_wavy: "Длинные",
-      bob: "Каре",
-      twin_tails: "Хвостики",
-      messy: "Трёш",
-      wolf_cut: "Wolf cut",
-    },
-    ears: { human: "Человек", cat: "Кошка", fox: "Лис", bunny: "Кролик" },
-    outfit: {
-      hoodie: "Худи",
-      sweater: "Свитер",
-      casual_tee: "Футболка",
-      cardigan: "Кардigan",
-      school: "Школа",
-    },
-    accessory: { none: "Нет", ribbon: "Бант", choker: "Чoker", glasses: "Очки" },
-    blush: { soft: "Лёгкий", medium: "Средний", strong: "Сильный" },
-    expression: {
-      smile: "Улыбка",
-      blushy: "Румянец",
-      shy: "Стеснение",
-      wink: "Подмиг",
-      surprised: "Удивление",
-      sleepy: "Сонный",
     },
   },
 } as const;
@@ -184,7 +156,7 @@ export function FemboyBuilder({
   const [name, setName] = useState(initialName);
   const [tagline, setTagline] = useState(initialTagline);
   const [lore, setLore] = useState(initialLore);
-  const [voiceId, setVoiceId] = useState(initialVoiceId);
+  const [voiceId, setVoiceId] = useState(englishVoiceId(initialVoiceId));
   const [saving, setSaving] = useState(false);
 
   const patch = (next: Partial<FemboyLook>) => setLook((current) => ({ ...current, ...next }));
@@ -196,7 +168,7 @@ export function FemboyBuilder({
 
   async function save() {
     if (!name.trim() || !tagline.trim()) {
-      toast.error(lang === "ru" ? "Имя и описание обязательны" : "Name and tagline are required");
+      toast.error("Name and tagline are required");
       return;
     }
     setSaving(true);
@@ -218,11 +190,11 @@ export function FemboyBuilder({
         toast.error(payload.error ?? "Could not save");
         return;
       }
-      toast.success(lang === "ru" ? "Фембойчик готов!" : "Your femboy is ready!");
+      toast.success("Your femboy is ready!");
       router.push(`/app/companions/${payload.slug}`);
       router.refresh();
     } catch {
-      toast.error(lang === "ru" ? "Ошибка сети" : "Network error");
+      toast.error("Network error");
     } finally {
       setSaving(false);
     }
@@ -242,7 +214,7 @@ export function FemboyBuilder({
         </div>
         <div className="rounded-2xl bg-card p-4 ring-1 ring-border">
           <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            {lang === "ru" ? "Превью эмоций" : "Live expressions"}
+            {"Live expressions"}
           </p>
           <OptionGrid
             value={expression}
@@ -256,29 +228,29 @@ export function FemboyBuilder({
       <section className="flex flex-col gap-6">
         <div className="grid gap-4 rounded-2xl bg-card p-5 ring-1 ring-border">
           <div className="grid gap-2">
-            <Label htmlFor="name">{lang === "ru" ? "Имя" : "Name"}</Label>
+            <Label htmlFor="name">{"Name"}</Label>
             <Input
               id="name"
               value={name}
               onChange={(event) => setName(event.target.value)}
-              placeholder={lang === "ru" ? "Например, Yuki" : "Like Yuki"}
+              placeholder={"Like Yuki"}
               maxLength={24}
             />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="tagline">{lang === "ru" ? "Описание" : "Tagline"}</Label>
+            <Label htmlFor="tagline">{"Tagline"}</Label>
             <Input
               id="tagline"
               value={tagline}
               onChange={(event) => setTagline(event.target.value)}
               placeholder={
-                lang === "ru" ? "Мягкий, заботливый, всегда рядом" : "Soft, caring, always nearby"
+                "Soft, caring, always nearby"
               }
               maxLength={80}
             />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="lore">{lang === "ru" ? "История (необяз.)" : "Backstory (optional)"}</Label>
+            <Label htmlFor="lore">{"Backstory (optional)"}</Label>
             <Textarea
               id="lore"
               value={lore}
@@ -291,7 +263,7 @@ export function FemboyBuilder({
 
         <div className="grid gap-5 rounded-2xl bg-card p-5 ring-1 ring-border">
           <div className="grid gap-2">
-            <Label>{lang === "ru" ? "Причёска" : "Hair style"}</Label>
+            <Label>{"Hair style"}</Label>
             <OptionGrid
               value={look.hairStyle}
               options={HAIR_STYLES}
@@ -300,19 +272,19 @@ export function FemboyBuilder({
             />
           </div>
           <div className="grid gap-2">
-            <Label>{lang === "ru" ? "Цвет волос" : "Hair color"}</Label>
+            <Label>{"Hair color"}</Label>
             <ColorSwatches value={look.hairColor} onChange={(hairColor) => patch({ hairColor })} />
           </div>
           <div className="grid gap-2">
-            <Label>{lang === "ru" ? "Цвет глаз" : "Eye color"}</Label>
+            <Label>{"Eye color"}</Label>
             <ColorSwatches value={look.eyeColor} onChange={(eyeColor) => patch({ eyeColor })} />
           </div>
           <div className="grid gap-2">
-            <Label>{lang === "ru" ? "Тон кожи" : "Skin tone"}</Label>
+            <Label>{"Skin tone"}</Label>
             <ColorSwatches value={look.skinTone} onChange={(skinTone) => patch({ skinTone })} />
           </div>
           <div className="grid gap-2">
-            <Label>{lang === "ru" ? "Ушки" : "Ears"}</Label>
+            <Label>{"Ears"}</Label>
             <OptionGrid
               value={look.ears}
               options={EAR_TYPES}
@@ -321,7 +293,7 @@ export function FemboyBuilder({
             />
           </div>
           <div className="grid gap-2">
-            <Label>{lang === "ru" ? "Одежда" : "Outfit"}</Label>
+            <Label>{"Outfit"}</Label>
             <OptionGrid
               value={look.outfit}
               options={OUTFITS}
@@ -330,14 +302,14 @@ export function FemboyBuilder({
             />
           </div>
           <div className="grid gap-2">
-            <Label>{lang === "ru" ? "Цвет одежды" : "Outfit color"}</Label>
+            <Label>{"Outfit color"}</Label>
             <ColorSwatches
               value={look.outfitColor}
               onChange={(outfitColor) => patch({ outfitColor })}
             />
           </div>
           <div className="grid gap-2">
-            <Label>{lang === "ru" ? "Аксессуар" : "Accessory"}</Label>
+            <Label>{"Accessory"}</Label>
             <OptionGrid
               value={look.accessory}
               options={ACCESSORIES}
@@ -346,7 +318,7 @@ export function FemboyBuilder({
             />
           </div>
           <div className="grid gap-2">
-            <Label>{lang === "ru" ? "Румянец" : "Blush"}</Label>
+            <Label>{"Blush"}</Label>
             <OptionGrid
               value={look.blush}
               options={BLUSH_LEVELS}
@@ -355,7 +327,7 @@ export function FemboyBuilder({
             />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="voice">{lang === "ru" ? "Голос" : "Voice"}</Label>
+            <Label htmlFor="voice">{"Voice"}</Label>
             <select
               id="voice"
               value={voiceId}
@@ -373,16 +345,10 @@ export function FemboyBuilder({
 
         <Button size="lg" onClick={() => void save()} disabled={saving}>
           {saving
-            ? lang === "ru"
-              ? "Сохраняю…"
-              : "Saving…"
+            ? "Saving…"
             : initialSlug
-              ? lang === "ru"
-                ? "Обновить фембойчика"
-                : "Update femboy"
-              : lang === "ru"
-                ? "Создать и начать чат"
-                : "Create & start chat"}
+              ? "Update femboy"
+              : "Create & start chat"}
         </Button>
       </section>
     </div>

@@ -145,12 +145,12 @@ export function usePiper(voiceId: string, enabled: boolean) {
   const downloadVoice = useCallback(async (tts: PiperModule) => {
     setPhase("downloading");
     setProgress(0);
-    setStatus("Голос качается…");
+    setStatus("Downloading voice…");
     await tts.download(voiceRef.current, (entry) => {
       if (entry.total) {
         const percent = Math.round((entry.loaded / entry.total) * 100);
         setProgress(percent);
-        setStatus(`Голос ${percent}%`);
+        setStatus(`Voice ${percent}%`);
       }
     });
     setProgress(100);
@@ -166,7 +166,7 @@ export function usePiper(voiceId: string, enabled: boolean) {
       await downloadVoice(tts);
     }
     setPhase("preparing");
-    setStatus("Собираем голос…");
+    setStatus("Preparing voice…");
     try {
       return await createSession(tts);
     } catch (error) {
@@ -177,7 +177,7 @@ export function usePiper(voiceId: string, enabled: boolean) {
       sessionRef.current = null;
       await downloadVoice(tts);
       setPhase("preparing");
-      setStatus("Собираем голос…");
+      setStatus("Preparing voice…");
       return await createSession(tts);
     }
   }, [createSession, downloadVoice]);
@@ -187,7 +187,7 @@ export function usePiper(voiceId: string, enabled: boolean) {
     setUsingFallback(false);
     setReady(false);
     setPhase("checking");
-    setStatus("Проверяем голос…");
+    setStatus("Checking voice…");
     try {
       const tts = await loadPiper();
       const stored = await tts.stored();

@@ -106,7 +106,7 @@ export function spriteFromContent(content: string): SpriteId {
   for (const part of parts) {
     if (part.type === "emotion") last = spriteFromEmotion(part.id);
   }
-  if (/\b(sit|сядь|садись)/i.test(content) && last === "smile") last = "sit";
+  if (/\bsit\b/i.test(content) && last === "smile") last = "sit";
   return last;
 }
 

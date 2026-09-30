@@ -1,5 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { CallRoomLoader } from "@/components/call-room-loader";
+import { englishVoiceId } from "@/lib/companions";
 import { ensureCompanionConfig, ensureUserSettings } from "@/lib/companion-service";
 import { getSession } from "@/lib/session";
 
@@ -21,7 +22,7 @@ export default async function CallPage({
       slug={slug}
       nickname={ensured.config.nickname}
       avatarPath={ensured.preset.avatarPath}
-      voiceId={ensured.config.voiceId}
+      voiceId={englishVoiceId(ensured.config.voiceId)}
       autoListen={settings.callAutoListen}
       locale={settings.locale}
     />

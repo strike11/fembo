@@ -20,7 +20,7 @@ export default function RegisterPage() {
         <RegisterForm />
         {isDevGuestEnabled() ? (
           <div className="flex flex-col gap-2">
-            <p className="text-center text-sm text-muted-foreground">или</p>
+            <p className="text-center text-sm text-muted-foreground">or</p>
             <DevGuestButton />
           </div>
         ) : null}

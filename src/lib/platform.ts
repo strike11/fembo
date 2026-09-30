@@ -60,11 +60,11 @@ export async function companionBond(userId: string, slug: string) {
 
 export function maybeMemoryFromMessage(content: string) {
   const patterns = [
-    /(?:remember(?: that)?|запомни(?: что)?)\s*[:\-]?\s*(.+)$/i,
-    /(?:call me|зови меня|называй меня)\s+(.+)$/i,
-    /(?:my name is|меня зовут)\s+(.+)$/i,
-    /(?:i (?:like|love|hate)|я (?:люблю|не люблю))\s+(.+)$/i,
-    /(?:i don't like|мне не нравится)\s+(.+)$/i,
+    /(?:remember(?: that)?)\s*[:\-]?\s*(.+)$/i,
+    /(?:call me)\s+(.+)$/i,
+    /(?:my name is)\s+(.+)$/i,
+    /(?:i (?:like|love|hate))\s+(.+)$/i,
+    /(?:i don't like)\s+(.+)$/i,
   ];
   for (const pattern of patterns) {
     const match = content.match(pattern);

@@ -86,9 +86,6 @@ export default async function SettingsPage() {
         statusLine={settings.statusLine}
 
         sleepMode={settings.sleepMode}
-
-        locale={settings.locale}
-
       />
 
       <div className="flex flex-wrap gap-3 text-sm">

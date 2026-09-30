@@ -17,10 +17,10 @@ export function applyStreamPiece(full: string, piece: string) {
 export function voiceErrorMessage(error: unknown) {
   const raw = error instanceof Error ? error.message : String(error);
   if (/protobuf|no graph|ERROR_CODE:\s*2/i.test(raw)) {
-    return "Голос скачался с ошибкой. Можно попробовать ещё раз или писать без озвучки.";
+    return "The voice download failed. Try again, or keep chatting in text.";
   }
   if (/wasm|onnx|cdn|backend|dynamically imported/i.test(raw)) {
-    return "Голос ещё собирается. Можно подождать или писать без озвучки.";
+    return "The voice is still loading. Wait a moment, or keep chatting in text.";
   }
   return raw;
 }

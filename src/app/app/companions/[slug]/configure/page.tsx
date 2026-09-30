@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ConfigureForm } from "@/components/configure-form";
 import { buttonVariants } from "@/components/ui/button";
+import { englishVoiceId } from "@/lib/companions";
 import { ensureCompanionConfig } from "@/lib/companion-service";
 import { getSession } from "@/lib/session";
 import { cn } from "@/lib/utils";
@@ -53,7 +54,7 @@ export default async function ConfigurePage({
           treatYou: ensured.config.treatYou,
           appearanceNotes: ensured.config.appearanceNotes,
           callYou: ensured.config.callYou,
-          voiceId: ensured.config.voiceId,
+          voiceId: englishVoiceId(ensured.config.voiceId),
         }}
       />
     </main>
